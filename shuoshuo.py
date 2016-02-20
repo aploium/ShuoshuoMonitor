@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
 from json import loads as json_loads
 from re import search as re_search
+
+from builtins import print
 from time import sleep, strftime, localtime
 
 from cookies_convert import selenium2requests
 
 try:
     from ColorfulPyPrint import *
-except:
+except:  # 优先使用外置库,若找不到则使用内置,下同
     from _ColorfulPyPrint import *
 try:
-    from selenium import webdriver
+    from __selenium import webdriver
 except:
-    errprint('需要selenium包的支持,请安装: pip install selenium')
+    from _selenium import webdriver
 try:
-    from requests import session, Response as reqResponse, get
+    from __requests import session, Response as reqResponse, get
 except:
-    errprint('需要requests包的支持,请安装: pip install requests')
+    from _requests import session, Response as reqResponse, get
 
 __version__ = '0.6.0'
 jumpUrl = ''

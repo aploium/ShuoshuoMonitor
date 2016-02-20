@@ -9,14 +9,14 @@ tips:建议丢到windows server上运行
 ## 运行需求  
 ---
  - firefox  
- - requests (一个python模块)  
- - selenium (一个python模块)  
+ - requests (一个python模块,已内置)  
+ - selenium (一个python模块,已内置)  
   
 ## 安装  
 ---
  - 安装[firefox](http://www.firefox.com.cn/)  
- - 安装[Python 3.5](https://www.python.org/downloads/),安装记得勾选`add to path`  
- - (windows) win+R -> cmd -> `pip install requests` -> `pip install selenium`  
+ - 安装[Python 3.x](https://www.python.org/downloads/)建议安装3.5,安装时记得勾选`add to path`  
+   
 
 ## 参数  
     -h --help: 显示帮助  
