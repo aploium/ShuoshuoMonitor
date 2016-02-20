@@ -5,18 +5,27 @@
   
 在运行时会先打开firefox(需要手动登陆QQ空间)，然后在自动获取cookies后关掉firefox,此后均不需要浏览器  
 tips:建议丢到windows server上运行
+  
+## 下载与运行  
+---
+#### 如果你是电白
+ - 安装[firefox](http://www.firefox.com.cn/)  
+ - 点右边的链接下载电白专用运行包  https://github.com/Aploium/ShuoshuoMonitor/releases/download/v0.6.3/ShuoshuoMonitor_v0.6.3.zip  
+   - 必须先全部解压才能运行  
+   - 在压缩包里直接双击的蠢货们,你们一定嫁不出去的  
+ - __解压__后运行`ShuoshuoMonitor.exe`  
+
+#### 如果你会用Python
+ - 安装[firefox](http://www.firefox.com.cn/)  
+ - 安装[Python 3.x](https://www.python.org/downloads/)建议安装3.5,安装时记得勾选`add to path`  
+ - 点网页右上`Download ZIP`下载Python源码后运行`python shuoshuo.py`  
+   
 
 ## 运行需求  
 ---
  - firefox  
  - requests (一个python模块,已内置)  
  - selenium (一个python模块,已内置)  
-  
-## 安装  
----
- - 安装[firefox](http://www.firefox.com.cn/)  
- - 安装[Python 3.x](https://www.python.org/downloads/)建议安装3.5,安装时记得勾选`add to path`  
-   
 
 ## 参数  
     -h --help: 显示帮助  
