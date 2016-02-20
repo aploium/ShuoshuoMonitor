@@ -17,7 +17,7 @@ try:
 except:
     errprint('requests,请安装: pip install requests')
 
-__version__ = '0.6.2'
+__version__ = '0.6.3'
 jumpUrl = ''
 targetQQ = ''
 delay = 10  # second
@@ -64,7 +64,7 @@ def PraseCmdline():
             ownerQQ = re_search(r'clientuin=(?P<qq>\d+)&', jumpUrl).group('qq')
             required_args.remove('-s')
         elif o in ("-v", "--verbose"):
-            verbose_level = a
+            verbose_level = int(a)
         elif o in ("-s", "--self-login"):
             jumpUrl = None
             ownerQQ = a
