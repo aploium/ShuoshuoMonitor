@@ -1,6 +1,6 @@
 # ShuoshuoMonitor  
 ---
-`version 0.6.0`  
+`version 0.6.2`  
 监控别人的说说,并在对方新发说说时给予秒赞  
   
 在运行时会先打开firefox(需要手动登陆QQ空间)，然后在自动获取cookies后关掉firefox,此后均不需要浏览器  
