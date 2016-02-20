@@ -48,7 +48,6 @@ $RECYCLE.BIN/
 
 #package management formats
 *.dmg
-*.xpi
 *.gem
 *.egg
 *.deb
@@ -62,8 +61,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
+
 
 # Distribution / packaging
 .Python
