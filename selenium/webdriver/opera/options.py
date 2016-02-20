@@ -20,6 +20,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class Options(ChromeOptions):
+
     def __init__(self):
         ChromeOptions.__init__(self)
         self._android_package_name = ''
@@ -99,6 +100,7 @@ class Options(ChromeOptions):
 
 
 class AndroidOptions(Options):
+
     def __init__(self):
         Options.__init__(self)
         self.android_package_name = 'com.opera.browser'

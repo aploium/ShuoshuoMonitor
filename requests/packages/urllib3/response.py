@@ -1,23 +1,22 @@
 from __future__ import absolute_import
-
-import io
 from contextlib import contextmanager
-from socket import error as SocketError
-from socket import timeout as SocketTimeout
-
 import zlib
-from .packages.six.moves import http_client as httplib
+import io
+from socket import timeout as SocketTimeout
+from socket import error as SocketError
 
 from ._collections import HTTPHeaderDict
-from .connection import HTTPException, BaseSSLError
 from .exceptions import (
     ProtocolError, DecodeError, ReadTimeoutError, ResponseNotChunked
 )
 from .packages.six import string_types as basestring, binary_type, PY3
+from .packages.six.moves import http_client as httplib
+from .connection import HTTPException, BaseSSLError
 from .util.response import is_fp_closed, is_response_to_head
 
 
 class DeflateDecoder(object):
+
     def __init__(self):
         self._first_try = True
         self._data = binary_type()
@@ -46,6 +45,7 @@ class DeflateDecoder(object):
 
 
 class GzipDecoder(object):
+
     def __init__(self):
         self._obj = zlib.decompressobj(16 + zlib.MAX_WBITS)
 
@@ -320,7 +320,7 @@ class HTTPResponse(io.IOBase):
 
         return data
 
-    def stream(self, amt=2 ** 16, decode_content=None):
+    def stream(self, amt=2**16, decode_content=None):
         """
         A generator wrapper for the read() method. A call will block until
         ``amt`` bytes have been read from the connection or until the

@@ -17,7 +17,6 @@
 
 import abc
 import os
-
 from selenium.webdriver.common.keys import Keys
 
 
@@ -37,7 +36,6 @@ class UselessFileDetector(FileDetector):
     """
     A file detector that never finds anything.
     """
-
     def is_local_file(self, *keys):
         return None
 
@@ -46,7 +44,6 @@ class LocalFileDetector(FileDetector):
     """
     Detects files on the local disk.
     """
-
     def is_local_file(self, *keys):
         file_path = ''
         typing = []

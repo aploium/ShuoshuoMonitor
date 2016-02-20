@@ -121,7 +121,7 @@ class SubjectAltName(BaseSubjectAltName):
     #   however this needs to have some limit so we'll set an arbitrarily high
     #   limit.
     sizeSpec = univ.SequenceOf.sizeSpec + \
-               constraint.ValueSizeConstraint(1, 1024)
+        constraint.ValueSizeConstraint(1, 1024)
 
 
 # Note: This is a slightly bug-fixed version of same from ndg-httpsclient.
@@ -249,7 +249,7 @@ class WrappedSocket(object):
             'subjectAltName': [
                 ('DNS', value)
                 for value in get_subj_alt_name(x509)
-                ]
+            ]
         }
 
     def _reuse(self):

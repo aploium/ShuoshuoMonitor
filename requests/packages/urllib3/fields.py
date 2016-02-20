@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-
 import email.utils
 import mimetypes
 
@@ -61,7 +60,6 @@ class RequestField(object):
     :param headers:
         An optional dict-like object of headers to initially use for the field.
     """
-
     def __init__(self, name, data, filename=None, headers=None):
         self._name = name
         self._filename = filename

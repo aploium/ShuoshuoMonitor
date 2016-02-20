@@ -51,25 +51,23 @@ __copyright__ = 'Copyright 2015 Kenneth Reitz'
 # Attempt to enable urllib3's SNI support, if possible
 try:
     from .packages.urllib3.contrib import pyopenssl
-
     pyopenssl.inject_into_urllib3()
 except ImportError:
     pass
 
 from . import utils
+from .models import Request, Response, PreparedRequest
 from .api import request, get, head, post, patch, put, delete, options
+from .sessions import session, Session
+from .status_codes import codes
 from .exceptions import (
     RequestException, Timeout, URLRequired,
     TooManyRedirects, HTTPError, ConnectionError,
     FileModeWarning,
 )
-from .models import Request, Response, PreparedRequest
-from .sessions import session, Session
-from .status_codes import codes
 
 # Set default logging handler to avoid "No handler found" warnings.
 import logging
-
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:

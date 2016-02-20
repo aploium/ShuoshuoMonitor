@@ -14,10 +14,8 @@ Available hooks:
 """
 HOOKS = ['response']
 
-
 def default_hooks():
     return dict((event, []) for event in HOOKS)
-
 
 # TODO: response is the only one
 

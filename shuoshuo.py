@@ -6,7 +6,7 @@ from cookies_convert import selenium2requests
 
 try:
     from ColorfulPyPrint import *
-except:  # 优先使用外置库,若找不到则使用内置,下同
+except:
     from _ColorfulPyPrint import *
 try:
     from selenium import webdriver

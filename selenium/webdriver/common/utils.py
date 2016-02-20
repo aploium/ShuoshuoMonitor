@@ -32,7 +32,6 @@ def free_port():
     free_socket.close()
     return port
 
-
 def is_connectable(port):
     """
     Tries to connect to the server at port to see if it is running.
@@ -50,7 +49,6 @@ def is_connectable(port):
     finally:
         socket_.close()
     return result
-
 
 def is_url_connectable(port):
     """

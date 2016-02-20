@@ -20,8 +20,11 @@ try:
 except ImportError:
     import httplib as http_client
 
-from selenium.webdriver.chrome.webdriver import WebDriver as ChromiumDriver
+import os
 
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
+from selenium.webdriver.chrome.webdriver import WebDriver as ChromiumDriver
 from .options import Options
 
 

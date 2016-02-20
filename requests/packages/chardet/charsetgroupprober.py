@@ -25,9 +25,8 @@
 # 02110-1301  USA
 ######################### END LICENSE BLOCK #########################
 
-import sys
-
 from . import constants
+import sys
 from .charsetprober import CharSetProber
 
 
@@ -53,7 +52,7 @@ class CharSetGroupProber(CharSetProber):
             self.get_confidence()
             if not self._mBestGuessProber:
                 return None
-                #                self._mBestGuessProber = self._mProbers[0]
+#                self._mBestGuessProber = self._mProbers[0]
         return self._mBestGuessProber.get_charset_name()
 
     def feed(self, aBuf):
@@ -102,7 +101,6 @@ class CharSetGroupProber(CharSetProber):
         if not self._mBestGuessProber:
             return 0.0
         return bestConf
-
-# else:
+#        else:
 #            self._mBestGuessProber = self._mProbers[0]
 #            return self._mBestGuessProber.get_confidence()

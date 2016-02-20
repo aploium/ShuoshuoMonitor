@@ -15,17 +15,17 @@
 # specific language governing permissions and limitations
 # under the License.
 
+import base64
+
 try:
     import http.client as http_client
 except ImportError:
     import httplib as http_client
 
 import os
-
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from .service import Service
-
 
 class WebDriver(RemoteWebDriver):
     """
@@ -56,8 +56,8 @@ class WebDriver(RemoteWebDriver):
         self.service.start()
 
         RemoteWebDriver.__init__(self,
-                                 command_executor=self.service.service_url,
-                                 desired_capabilities=desired_capabilities)
+            command_executor=self.service.service_url,
+            desired_capabilities=desired_capabilities)
         self._is_remote = False
 
     def quit(self):

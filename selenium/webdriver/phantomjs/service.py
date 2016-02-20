@@ -32,15 +32,16 @@ class Service(service.Service):
          - service_args : A List of other command line options to pass to PhantomJS
          - log_path: Path for PhantomJS service to log to
         """
-        self.service_args = service_args
+        self.service_args= service_args
         if self.service_args is None:
             self.service_args = []
         else:
-            self.service_args = service_args[:]
+            self.service_args=service_args[:]
         if not log_path:
             log_path = "ghostdriver.log"
 
         service.Service.__init__(self, executable_path, port=port, log_file=open(log_path, 'w'))
+
 
     def command_line_args(self):
         return self.service_args + ["--webdriver=%d" % self.port]

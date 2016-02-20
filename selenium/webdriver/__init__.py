@@ -15,21 +15,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from .android.webdriver import WebDriver as Android
-from .blackberry.webdriver import WebDriver as BlackBerry
-from .chrome.options import Options as ChromeOptions
-from .chrome.webdriver import WebDriver as Chrome
-from .common.action_chains import ActionChains
-from .common.desired_capabilities import DesiredCapabilities
-from .common.proxy import Proxy
-from .common.touch_actions import TouchActions
-from .edge.webdriver import WebDriver as Edge
-from .firefox.firefox_profile import FirefoxProfile
 from .firefox.webdriver import WebDriver as Firefox
+from .firefox.firefox_profile import FirefoxProfile
+from .chrome.webdriver import WebDriver as Chrome
+from .chrome.options import Options as ChromeOptions
 from .ie.webdriver import WebDriver as Ie
+from .edge.webdriver import WebDriver as Edge
 from .opera.webdriver import WebDriver as Opera
-from .phantomjs.webdriver import WebDriver as PhantomJS
-from .remote.webdriver import WebDriver as Remote
 from .safari.webdriver import WebDriver as Safari
+from .blackberry.webdriver import WebDriver as BlackBerry
+from .phantomjs.webdriver import WebDriver as PhantomJS
+from .android.webdriver import WebDriver as Android
+from .remote.webdriver import WebDriver as Remote
+from .common.desired_capabilities import DesiredCapabilities
+from .common.action_chains import ActionChains
+from .common.touch_actions import TouchActions
+from .common.proxy import Proxy
 
 __version__ = '2.51.0'

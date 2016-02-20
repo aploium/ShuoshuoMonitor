@@ -16,9 +16,7 @@
 # under the License.
 
 from subprocess import PIPE
-
 from selenium.webdriver.common import service
-
 
 class Service(service.Service):
     def __init__(self, executable_path, port=0, log_file=PIPE):

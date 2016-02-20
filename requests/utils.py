@@ -14,7 +14,9 @@ import codecs
 import collections
 import io
 import os
+import platform
 import re
+import sys
 import socket
 import struct
 import warnings
@@ -26,8 +28,8 @@ from .compat import (quote, urlparse, bytes, str, OrderedDict, unquote, is_py2,
                      builtin_str, getproxies, proxy_bypass, urlunparse,
                      basestring)
 from .cookies import RequestsCookieJar, cookiejar_from_dict
-from .exceptions import InvalidURL, FileModeWarning
 from .structures import CaseInsensitiveDict
+from .exceptions import InvalidURL, FileModeWarning
 
 _hush_pyflakes = (RequestsCookieJar,)
 
@@ -141,7 +143,7 @@ def guess_filename(obj):
     """Tries to guess the filename of the given object."""
     name = getattr(obj, 'name', None)
     if (name and isinstance(name, basestring) and name[0] != '<' and
-                name[-1] != '>'):
+            name[-1] != '>'):
         return os.path.basename(name)
 
 
@@ -555,14 +557,12 @@ def should_bypass_proxies(url):
 
     return False
 
-
 def get_environ_proxies(url):
     """Return a dict of environment proxies."""
     if should_bypass_proxies(url):
         return {}
     else:
         return getproxies()
-
 
 def select_proxy(url, proxies):
     """Select a proxy for the url, if applicable.
@@ -572,11 +572,10 @@ def select_proxy(url, proxies):
     """
     proxies = proxies or {}
     urlparts = urlparse(url)
-    proxy = proxies.get(urlparts.scheme + '://' + urlparts.hostname)
+    proxy = proxies.get(urlparts.scheme+'://'+urlparts.hostname)
     if proxy is None:
         proxy = proxies.get(urlparts.scheme)
     return proxy
-
 
 def default_user_agent(name="python-requests"):
     """Return a string representing the default user agent."""
@@ -638,26 +637,26 @@ def guess_json_utf(data):
     # determine the encoding. Also detect a BOM, if present.
     sample = data[:4]
     if sample in (codecs.BOM_UTF32_LE, codecs.BOM32_BE):
-        return 'utf-32'  # BOM included
+        return 'utf-32'     # BOM included
     if sample[:3] == codecs.BOM_UTF8:
         return 'utf-8-sig'  # BOM included, MS style (discouraged)
     if sample[:2] in (codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE):
-        return 'utf-16'  # BOM included
+        return 'utf-16'     # BOM included
     nullcount = sample.count(_null)
     if nullcount == 0:
         return 'utf-8'
     if nullcount == 2:
-        if sample[::2] == _null2:  # 1st and 3rd are null
+        if sample[::2] == _null2:   # 1st and 3rd are null
             return 'utf-16-be'
         if sample[1::2] == _null2:  # 2nd and 4th are null
             return 'utf-16-le'
-            # Did not detect 2 valid UTF-16 ascii-range characters
+        # Did not detect 2 valid UTF-16 ascii-range characters
     if nullcount == 3:
         if sample[:3] == _null3:
             return 'utf-32-be'
         if sample[1:] == _null3:
             return 'utf-32-le'
-            # Did not detect a valid UTF-32 ascii-range character
+        # Did not detect a valid UTF-32 ascii-range character
     return None
 
 

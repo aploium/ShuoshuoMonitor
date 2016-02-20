@@ -14,6 +14,7 @@ from ntlm import ntlm
 
 from urllib3 import HTTPSConnectionPool
 
+
 log = getLogger(__name__)
 
 

@@ -1,7 +1,5 @@
 from __future__ import absolute_import
-
 import socket
-
 try:
     from select import poll, POLLIN
 except ImportError:  # `poll` doesn't exist on OSX and other platforms

@@ -17,10 +17,12 @@
 
 import os
 import platform
+import time
 import subprocess
 
-from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.remote.command import Command
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait
 
 LOAD_TIMEOUT = 5
@@ -45,7 +47,6 @@ class WebDriver(RemoteWebDriver):
           WebWorks SDK - the default install will put it in the $PATH for you.
           Download at https://developer.blackberry.com/html5/downloads/
     """
-
     def __init__(self, device_password, bb_tools_dir=None,
                  hostip='169.254.0.1', port=1338, desired_capabilities={}):
         remote_addr = 'http://{}:{}'.format(hostip, port)
@@ -60,8 +61,7 @@ class WebDriver(RemoteWebDriver):
                 if not os.path.isfile(bb_deploy_location):
                     raise WebDriverException('Invalid blackberry-deploy location: {}'.format(bb_deploy_location))
             else:
-                raise WebDriverException(
-                    'Invalid blackberry tools location, must be a directory: {}'.format(bb_tools_dir))
+                raise WebDriverException('Invalid blackberry tools location, must be a directory: {}'.format(bb_tools_dir))
         else:
             bb_deploy_location = filename
 
@@ -90,7 +90,7 @@ class WebDriver(RemoteWebDriver):
                                    '-package-id', 'gYABgJYFHAzbeFMPCCpYWBtHAm0',
                                    '-password', str(device_password)]
 
-                WebDriverWait(None, LOAD_TIMEOUT) \
+                WebDriverWait(None, LOAD_TIMEOUT)\
                     .until(lambda x: subprocess.check_output(is_running_args)
                            .find('result::true'),
                            message='waiting for BlackBerry10 browser to load')
@@ -101,8 +101,7 @@ class WebDriver(RemoteWebDriver):
             else:
                 raise WebDriverException('blackberry-deploy failed to launch browser')
         except Exception as e:
-            raise WebDriverException('Something went wrong launching blackberry-deploy',
-                                     stacktrace=getattr(e, 'stacktrace', None))
+            raise WebDriverException('Something went wrong launching blackberry-deploy', stacktrace=getattr(e, 'stacktrace', None))
 
     def quit(self):
         """

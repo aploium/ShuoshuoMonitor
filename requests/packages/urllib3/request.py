@@ -1,11 +1,11 @@
 from __future__ import absolute_import
-
 try:
     from urllib.parse import urlencode
 except ImportError:
     from urllib import urlencode
 
 from .filepost import encode_multipart_formdata
+
 
 __all__ = ['RequestMethods']
 

@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-
 import logging
 
 try:  # Python 3
@@ -15,7 +14,9 @@ from .request import RequestMethods
 from .util.url import parse_url
 from .util.retry import Retry
 
+
 __all__ = ['PoolManager', 'ProxyManager', 'proxy_from_url']
+
 
 pool_classes_by_scheme = {
     'http': HTTPConnectionPool,

@@ -15,10 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from selenium.webdriver.common.alert import Alert
-
 from .command import Command
-
+from selenium.webdriver.common.alert import Alert
 
 class SwitchTo:
     def __init__(self, driver):

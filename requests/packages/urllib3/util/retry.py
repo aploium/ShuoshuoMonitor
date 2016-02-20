@@ -1,8 +1,6 @@
 from __future__ import absolute_import
-
-import logging
-
 import time
+import logging
 
 from ..exceptions import (
     ConnectTimeoutError,
@@ -12,6 +10,7 @@ from ..exceptions import (
     ResponseError,
 )
 from ..packages import six
+
 
 log = logging.getLogger(__name__)
 
@@ -280,7 +279,7 @@ class Retry(object):
     def __repr__(self):
         return ('{cls.__name__}(total={self.total}, connect={self.connect}, '
                 'read={self.read}, redirect={self.redirect})').format(
-            cls=type(self), self=self)
+                    cls=type(self), self=self)
 
 
 # For backwards compatibility (equivalent to pre-v1.9):

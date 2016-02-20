@@ -26,12 +26,11 @@
 ######################### END LICENSE BLOCK #########################
 
 import sys
-
 from . import constants
-from .chardistribution import EUCJPDistributionAnalysis
-from .codingstatemachine import CodingStateMachine
-from .jpcntx import EUCJPContextAnalysis
 from .mbcharsetprober import MultiByteCharSetProber
+from .codingstatemachine import CodingStateMachine
+from .chardistribution import EUCJPDistributionAnalysis
+from .jpcntx import EUCJPContextAnalysis
 from .mbcssm import EUCJPSMModel
 
 
@@ -80,7 +79,7 @@ class EUCJPProber(MultiByteCharSetProber):
 
         if self.get_state() == constants.eDetecting:
             if (self._mContextAnalyzer.got_enough_data() and
-                    (self.get_confidence() > constants.SHORTCUT_THRESHOLD)):
+               (self.get_confidence() > constants.SHORTCUT_THRESHOLD)):
                 self._mState = constants.eFoundIt
 
         return self.get_state()

@@ -1,13 +1,13 @@
 from __future__ import absolute_import
-
-import hmac
+import errno
 import warnings
+import hmac
+
+from binascii import hexlify, unhexlify
 from hashlib import md5, sha1, sha256
 
-import errno
-from binascii import hexlify, unhexlify
-
 from ..exceptions import SSLError, InsecurePlatformWarning, SNIMissingWarning
+
 
 SSLContext = None
 HAS_SNI = False
@@ -37,12 +37,14 @@ def _const_compare_digest_backport(a, b):
 _const_compare_digest = getattr(hmac, 'compare_digest',
                                 _const_compare_digest_backport)
 
+
 try:  # Test for SSL features
     import ssl
     from ssl import wrap_socket, CERT_NONE, PROTOCOL_SSLv23
     from ssl import HAS_SNI  # Has SNI?
 except ImportError:
     pass
+
 
 try:
     from ssl import OP_NO_SSLv2, OP_NO_SSLv3, OP_NO_COMPRESSION
@@ -73,7 +75,6 @@ try:
     from ssl import SSLContext  # Modern SSL?
 except ImportError:
     import sys
-
 
     class SSLContext(object):  # Platform-specific: Python 2 & 3.1
         supports_set_ciphers = ((2, 7) <= sys.version_info < (3,) or

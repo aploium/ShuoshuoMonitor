@@ -15,11 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+import base64
+from selenium.webdriver.remote.command import Command
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
-
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.common.exceptions import WebDriverException
 from .service import Service
-
 
 class WebDriver(RemoteWebDriver):
     """
@@ -46,13 +47,13 @@ class WebDriver(RemoteWebDriver):
          - service_log_path: Path for phantomjs service to log to.
         """
         self.service = Service(executable_path, port=port,
-                               service_args=service_args, log_path=service_log_path)
+            service_args=service_args, log_path=service_log_path)
         self.service.start()
 
         try:
             RemoteWebDriver.__init__(self,
-                                     command_executor=self.service.service_url,
-                                     desired_capabilities=desired_capabilities)
+                command_executor=self.service.service_url,
+                desired_capabilities=desired_capabilities)
         except:
             self.quit()
             raise

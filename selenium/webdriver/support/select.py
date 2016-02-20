@@ -15,11 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from selenium.common.exceptions import NoSuchElementException, UnexpectedTagNameException
 from selenium.webdriver.common.by import By
-
+from selenium.common.exceptions import NoSuchElementException, UnexpectedTagNameException
 
 class Select:
+
     def __init__(self, webelement):
         """
         Constructor. A check is made that the given element is, indeed, a SELECT tag. If it is not,
@@ -34,7 +34,7 @@ class Select:
         """
         if webelement.tag_name.lower() != "select":
             raise UnexpectedTagNameException(
-                "Select only works on <select> elements, not on <%s>" %
+                "Select only works on <select> elements, not on <%s>" % 
                 webelement.tag_name)
         self._el = webelement
         multi = self._el.get_attribute("multiple")
@@ -44,7 +44,7 @@ class Select:
     def options(self):
         """Returns a list of all options belonging to this select tag"""
         return self._el.find_elements(By.TAG_NAME, 'option')
-
+        
     @property
     def all_selected_options(self):
         """Returns a list of all selected options belonging to this select tag"""
@@ -197,7 +197,7 @@ class Select:
     def _unsetSelected(self, option):
         if option.is_selected():
             option.click()
-
+    
     def _escapeString(self, value):
         if '"' in value and "'" in value:
             substrings = value.split("\"")

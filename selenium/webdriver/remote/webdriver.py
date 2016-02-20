@@ -20,17 +20,17 @@
 import base64
 import warnings
 
-from selenium.common.exceptions import InvalidSelectorException
+from .command import Command
+from .webelement import WebElement
+from .remote_connection import RemoteConnection
+from .errorhandler import ErrorHandler
+from .switch_to import SwitchTo
+from .mobile import Mobile
+from .file_detector import FileDetector, LocalFileDetector
 from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import InvalidSelectorException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.html5.application_cache import ApplicationCache
-from .command import Command
-from .errorhandler import ErrorHandler
-from .file_detector import FileDetector, LocalFileDetector
-from .mobile import Mobile
-from .remote_connection import RemoteConnection
-from .switch_to import SwitchTo
-from .webelement import WebElement
 
 try:
     str = basestring
@@ -54,7 +54,7 @@ class WebDriver(object):
     """
 
     def __init__(self, command_executor='http://127.0.0.1:4444/wd/hub',
-                 desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False):
+        desired_capabilities=None, browser_profile=None, proxy=None, keep_alive=False):
         """
         Create a new driver that will issue commands using the wire protocol.
 
@@ -92,6 +92,7 @@ class WebDriver(object):
     def __repr__(self):
         return '<{0.__module__}.{0.__name__} (session="{1}")>'.format(
             type(self), self.session_id)
+
 
     @property
     def mobile(self):
@@ -425,7 +426,7 @@ class WebDriver(object):
         """
         converted_args = list(args)
         return self.execute(Command.EXECUTE_SCRIPT,
-                            {'script': script, 'args': converted_args})['value']
+            {'script': script, 'args':converted_args})['value']
 
     def execute_async_script(self, script, *args):
         """
@@ -440,7 +441,7 @@ class WebDriver(object):
         """
         converted_args = list(args)
         return self.execute(Command.EXECUTE_ASYNC_SCRIPT,
-                            {'script': script, 'args': converted_args})['value']
+            {'script': script, 'args':converted_args})['value']
 
     @property
     def current_url(self):
@@ -516,7 +517,7 @@ class WebDriver(object):
     def switch_to(self):
         return self._switch_to
 
-    # Target Locators
+    #Target Locators
     def switch_to_active_element(self):
         """ Deprecated use driver.switch_to.active_element
         """
@@ -547,7 +548,7 @@ class WebDriver(object):
         warnings.warn("use driver.switch_to.alert instead", DeprecationWarning)
         return self._switch_to.alert
 
-    # Navigation
+    #Navigation
     def back(self):
         """
         Goes one step backward in the browser history.
@@ -648,7 +649,7 @@ class WebDriver(object):
         """
         if self.w3c:
             self.execute(Command.SET_TIMEOUTS,
-                         {'ms': float(time_to_wait) * 1000, 'type': 'implicit'})
+                         {'ms': float(time_to_wait) * 1000, 'type':'implicit'})
         else:
             self.execute(Command.IMPLICIT_WAIT, {'ms': float(time_to_wait) * 1000})
 
@@ -665,7 +666,7 @@ class WebDriver(object):
         """
         if self.w3c:
             self.execute(Command.SET_TIMEOUTS,
-                         {'ms': float(time_to_wait) * 1000, 'type': 'script'})
+                         {'ms': float(time_to_wait) * 1000, 'type':'script'})
         else:
             self.execute(Command.SET_SCRIPT_TIMEOUT,
                          {'ms': float(time_to_wait) * 1000})
@@ -682,7 +683,7 @@ class WebDriver(object):
             driver.set_page_load_timeout(30)
         """
         self.execute(Command.SET_TIMEOUTS,
-                     {'ms': float(time_to_wait) * 1000, 'type': 'page load'})
+            {'ms': float(time_to_wait) * 1000, 'type':'page load'})
 
     def find_element(self, by=By.ID, value=None):
         """
@@ -708,7 +709,7 @@ class WebDriver(object):
                 by = By.CSS_SELECTOR
                 value = '[name="%s"]' % value
         return self.execute(Command.FIND_ELEMENT,
-                            {'using': by, 'value': value})['value']
+                             {'using': by, 'value': value})['value']
 
     def find_elements(self, by=By.ID, value=None):
         """
@@ -735,8 +736,7 @@ class WebDriver(object):
                 value = '[name="%s"]' % value
 
         return self.execute(Command.FIND_ELEMENTS,
-                            {'using': by, 'value': value})['value']
-
+                             {'using': by, 'value': value})['value']
     @property
     def desired_capabilities(self):
         """
@@ -801,7 +801,7 @@ class WebDriver(object):
         if self.w3c:
             command = Command.W3C_SET_WINDOW_SIZE
         self.execute(command, {'width': int(width), 'height': int(height),
-                               'windowHandle': windowHandle})
+          'windowHandle': windowHandle})
 
     def get_window_size(self, windowHandle='current'):
         """
@@ -814,7 +814,7 @@ class WebDriver(object):
         if self.w3c:
             command = Command.W3C_GET_WINDOW_SIZE
         size = self.execute(command,
-                            {'windowHandle': windowHandle})
+            {'windowHandle': windowHandle})
 
         if size.get('value', None) != None:
             return size['value']
@@ -833,7 +833,7 @@ class WebDriver(object):
             driver.set_window_position(0,0)
         """
         self.execute(Command.SET_WINDOW_POSITION, {'x': int(x), 'y': int(y),
-                                                   'windowHandle': windowHandle})
+          'windowHandle': windowHandle})
 
     def get_window_position(self, windowHandle='current'):
         """
@@ -843,7 +843,7 @@ class WebDriver(object):
             driver.get_window_position()
         """
         return self.execute(Command.GET_WINDOW_POSITION,
-                            {'windowHandle': windowHandle})['value']
+            {'windowHandle': windowHandle})['value']
 
     @property
     def file_detector(self):

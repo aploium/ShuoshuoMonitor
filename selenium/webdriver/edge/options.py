@@ -19,6 +19,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 class Options(object):
+
     def __init__(self):
         self._page_load_strategy = "normal"
 

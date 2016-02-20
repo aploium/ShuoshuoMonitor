@@ -22,10 +22,9 @@ import json
 import os
 import re
 import shutil
+import sys
 import tempfile
 import zipfile
-
-import sys
 
 try:
     from cStringIO import StringIO as BytesIO
@@ -35,6 +34,7 @@ except ImportError:
 from xml.dom import minidom
 from selenium.webdriver.common.proxy import ProxyType
 from selenium.common.exceptions import WebDriverException
+
 
 WEBDRIVER_EXT = "webdriver.xpi"
 WEBDRIVER_PREFERENCES = "webdriver_prefs.json"
@@ -80,7 +80,7 @@ class FirefoxProfile(object):
         self.extensionsDir = os.path.join(self.profile_dir, "extensions")
         self.userPrefs = os.path.join(self.profile_dir, "user.js")
 
-    # Public Methods
+    #Public Methods
     def set_preference(self, key, value):
         """
         sets the preference that we want in the profile.
@@ -95,7 +95,7 @@ class FirefoxProfile(object):
             self.default_preferences[key] = value
         self._write_user_prefs(self.default_preferences)
 
-    # Properties
+    #Properties
 
     @property
     def path(self):

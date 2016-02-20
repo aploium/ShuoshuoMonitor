@@ -1,12 +1,11 @@
 from __future__ import absolute_import
-
-import logging
-import socket
-import warnings
-from socket import error as SocketError, timeout as SocketTimeout
-
 import errno
+import logging
 import sys
+import warnings
+
+from socket import error as SocketError, timeout as SocketTimeout
+import socket
 
 try:  # Python 3
     from queue import LifoQueue, Empty, Full
@@ -14,6 +13,7 @@ except ImportError:
     from Queue import LifoQueue, Empty, Full
     # Queue is imported for side effects on MS Windows
     import Queue as _unused_module_Queue  # noqa: unused
+
 
 from .exceptions import (
     ClosedPoolError,
@@ -46,6 +46,7 @@ from .util.response import assert_header_parsing
 from .util.retry import Retry
 from .util.timeout import Timeout
 from .util.url import get_host, Url
+
 
 xrange = six.moves.xrange
 
@@ -741,7 +742,7 @@ class HTTPSConnectionPool(HTTPConnectionPool):
         except AttributeError:  # Platform-specific: Python 2.6
             set_tunnel = conn._set_tunnel
 
-        if sys.version_info <= (2, 6, 4) and not self.proxy_headers:  # Python 2.6.4 and older
+        if sys.version_info <= (2, 6, 4) and not self.proxy_headers:   # Python 2.6.4 and older
             set_tunnel(self.host, self.port)
         else:
             set_tunnel(self.host, self.port, self.proxy_headers)

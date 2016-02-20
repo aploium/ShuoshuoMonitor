@@ -12,25 +12,29 @@ import os
 from collections import Mapping
 from datetime import datetime
 
-from .adapters import HTTPAdapter
 from .auth import _basic_auth_str
 from .compat import cookielib, OrderedDict, urljoin, urlparse
 from .cookies import (
     cookiejar_from_dict, extract_cookies_to_jar, RequestsCookieJar, merge_cookies)
+from .models import Request, PreparedRequest, DEFAULT_REDIRECT_LIMIT
+from .hooks import default_hooks, dispatch_hook
+from .utils import to_key_val_list, default_headers, to_native_string
 from .exceptions import (
     TooManyRedirects, InvalidSchema, ChunkedEncodingError, ContentDecodingError)
-from .hooks import default_hooks, dispatch_hook
-from .models import Request, PreparedRequest, DEFAULT_REDIRECT_LIMIT
 from .packages.urllib3._collections import RecentlyUsedContainer
-from .status_codes import codes
 from .structures import CaseInsensitiveDict
+
+from .adapters import HTTPAdapter
+
 from .utils import (
     requote_uri, get_environ_proxies, get_netrc_auth, should_bypass_proxies,
     get_auth_from_url
 )
-from .utils import to_key_val_list, default_headers, to_native_string
+
+from .status_codes import codes
 
 # formerly defined here, reexposed here for backward compatibility
+from .models import REDIRECT_STATI
 
 REDIRECT_CACHE_SIZE = 1000
 
@@ -50,8 +54,8 @@ def merge_setting(request_setting, session_setting, dict_class=OrderedDict):
 
     # Bypass if not a dictionary (e.g. verify)
     if not (
-                isinstance(session_setting, Mapping) and
-                isinstance(request_setting, Mapping)
+            isinstance(session_setting, Mapping) and
+            isinstance(request_setting, Mapping)
     ):
         return request_setting
 
@@ -89,7 +93,7 @@ class SessionRedirectMixin(object):
         """Receives a Response. Returns a generator of Responses."""
 
         i = 0
-        hist = []  # keep track of history
+        hist = [] # keep track of history
 
         while resp.is_redirect:
             prepared_request = req.copy()
@@ -138,7 +142,7 @@ class SessionRedirectMixin(object):
 
             # http://tools.ietf.org/html/rfc7231#section-6.4.4
             if (resp.status_code == codes.see_other and
-                        method != 'HEAD'):
+                    method != 'HEAD'):
                 method = 'GET'
 
             # Do what the browsers do, despite standards...
@@ -207,7 +211,7 @@ class SessionRedirectMixin(object):
 
         if 'Authorization' in headers:
             # If we get redirected to a new host, we should strip out any
-            #  authentication headers.
+            # authentication headers.
             original_parsed = urlparse(response.request.url)
             redirect_parsed = urlparse(url)
 
@@ -364,6 +368,7 @@ class Session(SessionRedirectMixin):
         merged_cookies = merge_cookies(
             merge_cookies(RequestsCookieJar(), self.cookies), cookies)
 
+
         # Set environment's basic authentication if not explicitly set.
         auth = request.auth
         if self.trust_env and not auth and not self.auth:
@@ -385,20 +390,20 @@ class Session(SessionRedirectMixin):
         return p
 
     def request(self, method, url,
-                params=None,
-                data=None,
-                headers=None,
-                cookies=None,
-                files=None,
-                auth=None,
-                timeout=None,
-                allow_redirects=True,
-                proxies=None,
-                hooks=None,
-                stream=None,
-                verify=None,
-                cert=None,
-                json=None):
+        params=None,
+        data=None,
+        headers=None,
+        cookies=None,
+        files=None,
+        auth=None,
+        timeout=None,
+        allow_redirects=True,
+        proxies=None,
+        hooks=None,
+        stream=None,
+        verify=None,
+        cert=None,
+        json=None):
         """Constructs a :class:`Request <Request>`, prepares it and sends it.
         Returns :class:`Response <Response>` object.
 
@@ -435,16 +440,16 @@ class Session(SessionRedirectMixin):
         """
         # Create the Request.
         req = Request(
-            method=method.upper(),
-            url=url,
-            headers=headers,
-            files=files,
-            data=data or {},
-            json=json,
-            params=params or {},
-            auth=auth,
-            cookies=cookies,
-            hooks=hooks,
+            method = method.upper(),
+            url = url,
+            headers = headers,
+            files = files,
+            data = data or {},
+            json = json,
+            params = params or {},
+            auth = auth,
+            cookies = cookies,
+            hooks = hooks,
         )
         prep = self.prepare_request(req)
 
@@ -523,7 +528,7 @@ class Session(SessionRedirectMixin):
         :param \*\*kwargs: Optional arguments that ``request`` takes.
         """
 
-        return self.request('PATCH', url, data=data, **kwargs)
+        return self.request('PATCH', url,  data=data, **kwargs)
 
     def delete(self, url, **kwargs):
         """Sends a DELETE request. Returns :class:`Response` object.

@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-
 from base64 import b64encode
 
 from ..packages.six import b
@@ -61,11 +60,11 @@ def make_headers(keep_alive=None, accept_encoding=None, user_agent=None,
 
     if basic_auth:
         headers['authorization'] = 'Basic ' + \
-                                   b64encode(b(basic_auth)).decode('utf-8')
+            b64encode(b(basic_auth)).decode('utf-8')
 
     if proxy_basic_auth:
         headers['proxy-authorization'] = 'Basic ' + \
-                                         b64encode(b(proxy_basic_auth)).decode('utf-8')
+            b64encode(b(proxy_basic_auth)).decode('utf-8')
 
     if disable_cache:
         headers['cache-control'] = 'no-cache'

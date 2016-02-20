@@ -6,17 +6,14 @@ Compatibility code to be able to use `cookielib.CookieJar` with requests.
 requests.utils imports from here, so be careful with imports.
 """
 
+import copy
+import time
 import calendar
 import collections
-import copy
-
-import time
-
 from .compat import cookielib, urlparse, urlunparse, Morsel
 
 try:
     import threading
-
     # grr, pyflakes: this fixes "redefinition of unused 'threading'"
     threading
 except ImportError:
@@ -124,7 +121,7 @@ def extract_cookies_to_jar(jar, request, response):
     :param response: urllib3.HTTPResponse object
     """
     if not (hasattr(response, '_original_response') and
-                response._original_response):
+            response._original_response):
         return
     # the _original_response field is the wrapped httplib.HTTPResponse object,
     req = MockRequest(request)
@@ -181,7 +178,6 @@ class RequestsCookieJar(cookielib.CookieJar, collections.MutableMapping):
 
     .. warning:: dictionary operations that are normally O(1) may be O(n).
     """
-
     def get(self, name, default=None, domain=None, path=None):
         """Dict-like get() that also supports optional domain and path args in
         order to resolve naming collisions from using one cookie jar over
@@ -277,7 +273,7 @@ class RequestsCookieJar(cookielib.CookieJar, collections.MutableMapping):
         dictionary = {}
         for cookie in iter(self):
             if (domain is None or cookie.domain == domain) and (path is None
-                                                                or cookie.path == path):
+                                                or cookie.path == path):
                 dictionary[cookie.name] = cookie.value
         return dictionary
 
@@ -402,7 +398,7 @@ def create_cookie(name, value, **kwargs):
         comment=None,
         comment_url=None,
         rest={'HttpOnly': None},
-        rfc2109=False, )
+        rfc2109=False,)
 
     badargs = set(kwargs) - set(result)
     if badargs:

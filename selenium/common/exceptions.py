@@ -19,7 +19,6 @@
 Exceptions that may happen in all the webdriver code.
 """
 
-
 class WebDriverException(Exception):
     """
     Base webdriver exception.
@@ -39,7 +38,6 @@ class WebDriverException(Exception):
             exception_msg += "Stacktrace:\n%s" % stacktrace
         return exception_msg
 
-
 class ErrorInResponseException(WebDriverException):
     """
     Thrown when an error has occurred on the server side.
@@ -47,11 +45,9 @@ class ErrorInResponseException(WebDriverException):
     This may happen when communicating with the firefox extension
     or the remote driver server.
     """
-
     def __init__(self, response, msg):
         WebDriverException.__init__(self, msg)
         self.response = response
-
 
 class InvalidSwitchToTargetException(WebDriverException):
     """
@@ -59,13 +55,11 @@ class InvalidSwitchToTargetException(WebDriverException):
     """
     pass
 
-
 class NoSuchFrameException(InvalidSwitchToTargetException):
     """
     Thrown when frame target to be switched doesn't exist.
     """
     pass
-
 
 class NoSuchWindowException(InvalidSwitchToTargetException):
     """
@@ -79,7 +73,6 @@ class NoSuchWindowException(InvalidSwitchToTargetException):
     """
     pass
 
-
 class NoSuchElementException(WebDriverException):
     """
     Thrown when element could not be found.
@@ -92,7 +85,6 @@ class NoSuchElementException(WebDriverException):
     """
     pass
 
-
 class NoSuchAttributeException(WebDriverException):
     """
     Thrown when the attribute of element could not be found.
@@ -102,7 +94,6 @@ class NoSuchAttributeException(WebDriverException):
     property.  (IE8's .innerText vs. Firefox .textContent)
     """
     pass
-
 
 class StaleElementReferenceException(WebDriverException):
     """
@@ -122,12 +113,10 @@ class StaleElementReferenceException(WebDriverException):
     """
     pass
 
-
-class InvalidElementStateException(WebDriverException):
+class InvalidElementStateException(WebDriverException):  
     """
     """
     pass
-
 
 class UnexpectedAlertPresentException(WebDriverException):
     """
@@ -136,14 +125,12 @@ class UnexpectedAlertPresentException(WebDriverException):
     Usually raised when when an expected modal is blocking webdriver form executing any 
     more commands.
     """
-
     def __init__(self, msg=None, screen=None, stacktrace=None, alert_text=None):
         super(UnexpectedAlertPresentException, self).__init__(msg, screen, stacktrace)
         self.alert_text = alert_text
 
     def __str__(self):
         return "Alert Text: %s\n%s" % (self.alert_text, str(super(WebDriverException, self)))
-
 
 class NoAlertPresentException(WebDriverException):
     """
@@ -153,7 +140,6 @@ class NoAlertPresentException(WebDriverException):
     not yet on the screen.
     """
     pass
-
 
 class ElementNotVisibleException(InvalidElementStateException):
     """
@@ -165,7 +151,6 @@ class ElementNotVisibleException(InvalidElementStateException):
     """
     pass
 
-
 class ElementNotSelectableException(InvalidElementStateException):
     """
     Thrown when trying to select an unselectable element.
@@ -174,7 +159,6 @@ class ElementNotSelectableException(InvalidElementStateException):
     """
     pass
 
-
 class InvalidCookieDomainException(WebDriverException):
     """
     Thrown when attempting to add a cookie under a different domain
@@ -182,26 +166,22 @@ class InvalidCookieDomainException(WebDriverException):
     """
     pass
 
-
 class UnableToSetCookieException(WebDriverException):
     """
     Thrown when a driver fails to set a cookie.
     """
     pass
 
-
 class RemoteDriverServerException(WebDriverException):
     """
     """
     pass
-
 
 class TimeoutException(WebDriverException):
     """
     Thrown when a command does not complete in enough time.
     """
     pass
-
 
 class MoveTargetOutOfBoundsException(WebDriverException):
     """
@@ -210,13 +190,11 @@ class MoveTargetOutOfBoundsException(WebDriverException):
     """
     pass
 
-
 class UnexpectedTagNameException(WebDriverException):
     """
     Thrown when a support class did not get an expected web element.
     """
     pass
-
 
 class InvalidSelectorException(NoSuchElementException):
     """
@@ -228,14 +206,12 @@ class InvalidSelectorException(NoSuchElementException):
     """
     pass
 
-
 class ImeNotAvailableException(WebDriverException):
     """
     Thrown when IME support is not available. This exception is thrown for every IME-related
     method call if IME support is not available on the machine.
     """
     pass
-
 
 class ImeActivationFailedException(WebDriverException):
     """

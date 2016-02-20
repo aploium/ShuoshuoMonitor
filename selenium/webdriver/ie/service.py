@@ -16,7 +16,6 @@
 # under the License.
 from selenium.webdriver.common import service
 
-
 class Service(service.Service):
     """
     Object that manages the starting and stopping of the IEDriver
@@ -47,3 +46,5 @@ class Service(service.Service):
 
     def command_line_args(self):
         return ["--port=%d" % self.port] + self.service_args
+
+

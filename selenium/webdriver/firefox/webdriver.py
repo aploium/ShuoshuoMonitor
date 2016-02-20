@@ -23,19 +23,19 @@ except ImportError:
 
 import shutil
 import socket
-
 import sys
+
+from .firefox_binary import FirefoxBinary
+from .remote_connection import FirefoxRemoteConnection
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.firefox.extension_connection import ExtensionConnection
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
-
-from .firefox_binary import FirefoxBinary
-from .remote_connection import FirefoxRemoteConnection
 from .service import Service
 
 
 class WebDriver(RemoteWebDriver):
+
     # There is no native event support on Mac
     NATIVE_EVENTS_ALLOWED = sys.platform != "darwin"
 
@@ -77,9 +77,10 @@ class WebDriver(RemoteWebDriver):
             executor = ExtensionConnection("127.0.0.1", self.profile,
                                            self.binary, timeout)
             RemoteWebDriver.__init__(self,
-                                     command_executor=executor,
-                                     desired_capabilities=capabilities,
-                                     keep_alive=True)
+                command_executor=executor,
+            desired_capabilities=capabilities,
+            keep_alive=True)
+
 
         self._is_remote = False
 
