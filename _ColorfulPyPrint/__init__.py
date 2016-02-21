@@ -65,7 +65,10 @@ def _printr(output, other_inputs, printtype=PRINT_TYPE_INFO, timelevel=O_TIME_LE
         print(Fore.RED + 'PRINT ERROR: ', e)
     print(Fore.RESET)
     if is_beep:
-        beep()
+        try:
+            beep()
+        except:
+            pass
 
 
 def apoutput_set_verbose_level(verbose_level=1):
