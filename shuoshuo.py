@@ -18,23 +18,42 @@ try:
 except:
     errprint('requests,请安装: pip install requests')
 
-__version__ = '0.6.3'
+__version__ = '0.6.4'
+
+
+def is_complied():
+    from os.path import exists
+    from os import sep
+
+    try:
+        if exists('..' + sep + 'ShuoshuoMonitor.exe'):
+            return True
+        else:
+            return False
+    except:
+        return False
 
 
 def usage():
     global __version__
     import sys
     from os.path import basename
+    if is_complied():
+        program_exec_cmd = 'ShuoshuoMonitor '
+    else:
+        program_exec_cmd = 'python ' + basename(__file__)
     print('说说监控及秒赞工具 Version: %s' % __version__)
     print('### 本程序需要系统已安装firefox ###')
     print('    -h --help: 显示本帮助')
     print('    -s (selfQQ) --self-login: 指定自己的QQ并手动在浏览器中登陆')
-    print('    -q (targetQQ) --target-qq: 目标QQ号')
+    print('    -q (targetQQ) --target-qq: 目标QQ号,使用多个-q来指定多个目标')
     print('    -d (number)  --delay: 两次拉取说说的时间间隔(秒),默认10秒')
     print('    -j (url) --jump-url: 用于自动登陆的跳转Url(仅供高级用户使用,大多数用户建议用-s)')
     print('    -v (0-3)  --verbose: verbose level(仅供高级用户) 默认1')
     print()
-    print('example:    python ' + basename(__file__) + ' -q 345678901 -s 358890739')
+    print('example1:    ' + program_exec_cmd + ' -q 345678901 -q 123456789 -q 223456789 -s 333333333')
+    print('  在上例中,会打开firefox让你手动登陆,自身qq号为333333333,\n'
+          '设置了三个目标,QQ号分别为 345678901 123456789 223456789')
     sys.exit(2)
 
 
