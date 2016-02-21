@@ -2,6 +2,7 @@
 from json import loads as json_loads
 from re import search as re_search
 from time import sleep, strftime, localtime
+
 from cookies_convert import selenium2requests
 
 try:
@@ -18,13 +19,11 @@ except:
     errprint('requests,请安装: pip install requests')
 
 __version__ = '0.6.3'
-jumpUrl = ''
-targetQQ = ''
-delay = 10  # second
 
 
 def usage():
     global __version__
+    import sys
     from os.path import basename
     print('说说监控及秒赞工具 Version: %s' % __version__)
     print('### 本程序需要系统已安装firefox ###')
@@ -36,6 +35,7 @@ def usage():
     print('    -v (0-3)  --verbose: verbose level(仅供高级用户) 默认1')
     print()
     print('example:    python ' + basename(__file__) + ' -q 345678901 -s 358890739')
+    sys.exit(2)
 
 
 def PraseCmdline():
@@ -50,7 +50,6 @@ def PraseCmdline():
         # print help information and exit:
         errprint(err)  # will print something like "option -a not recognized"
         usage()
-        sys.exit(2)
 
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -61,7 +60,12 @@ def PraseCmdline():
             required_args.remove('-q')
         elif o in ("-j", "--jump-url"):
             jumpUrl = a
-            ownerQQ = re_search(r'clientuin=(?P<qq>\d+)&', jumpUrl).group('qq')
+            rematch = re_search(r'clientuin=(?P<qq>\d+)&', jumpUrl)
+            if rematch is not None:
+                ownerQQ = rematch.group('qq')
+            else:
+                errprint('请输入正确的jumpUrl')
+
             required_args.remove('-s')
         elif o in ("-v", "--verbose"):
             verbose_level = int(a)
@@ -74,7 +78,6 @@ def PraseCmdline():
     if required_args:
         errprint('缺少以下参数:', *required_args)
         usage()
-        sys.exit(2)
 
 
 def mood_do_like(Sess, tid):
@@ -103,6 +106,10 @@ def handle_new_mood(Sess, create_time, tid, content):
 
 
 infoprint('正在初始化')
+jumpUrl = ''
+targetQQ = ''
+delay = 10  # second
+failure_delay = delay  # increase once we failure
 initFlag = True
 latestTid = ''
 ownerQQ = ''
@@ -132,7 +139,7 @@ try:
     driver = webdriver.Firefox()
 except Exception as e:
     errprint('初始化失败. 请检查是否已安装最新版firefox,错误信息:', e)
-    exit()
+    usage()
 infoprint('初始化Cookies')
 if jumpUrl:
     warnprint('请#不要#操作弹出的浏览器')
@@ -168,9 +175,14 @@ i = 0
 while True:
     i += 1
     infoprint(i, '#正在获取说说信息 Target:', targetQQ)
-    moodJson = Sess.get(
-        'http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?uin=%s&ftype=0&sort=0&pos=0&num=5&replynum=100&g_tk=%s&callback=_preloadCallback&code_version=1&format=jsonp&need_private_comment=1' % (
-            targetQQ, token_list))
+    try:
+        moodJson = Sess.get(
+            'http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?uin=%s&ftype=0&sort=0&pos=0&num=5&replynum=100&g_tk=%s&callback=_preloadCallback&code_version=1&format=jsonp&need_private_comment=1' % (
+                targetQQ, token_list))
+    except Exception as e:
+        errprint('说说信息获取失败,将在', failure_delay, '秒后重试. 错误原因:', e)
+        failure_delay += delay
+        continue
     dbgprint(moodJson.text[:500])
     formatJson = json_loads(moodJson.text.replace('});', '}').replace('_preloadCallback(', ''))
     firstMoodContent = formatJson['msglist'][0]['content']
