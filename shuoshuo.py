@@ -22,11 +22,11 @@ __version__ = '0.7.0'
 
 
 def is_complied():
-    from os.path import exists
+    from os.path import exists, dirname
     from os import sep
 
     try:
-        if exists('..' + sep + 'ShuoshuoMonitor.exe'):
+        if exists(dirname(__file__) + sep + '..' + sep + 'ShuoshuoMonitor.exe'):
             return True
         else:
             return False
@@ -39,7 +39,7 @@ def usage(error_code=0):
     import sys
     from os.path import basename
     if is_complied():
-        program_exec_cmd = 'ShuoshuoMonitor '
+        program_exec_cmd = 'ShuoshuoMonitor'
     else:
         program_exec_cmd = 'python ' + basename(__file__)
     print('说说监控及秒赞工具 Version: %s' % __version__)
