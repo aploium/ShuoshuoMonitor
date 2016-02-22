@@ -288,9 +288,16 @@ while True:
             failure_delay += delay
             sleep(failure_delay)
             continue
-        firstMoodContent = formatJson['msglist'][0]['content']  # 最新一条说说的内容
-        firstMoodTimeUnix = int(formatJson['msglist'][0]['created_time'])  # 最新一条说说的Unix时间戳(来自json)
-        firstMoodTid = formatJson['msglist'][0]['tid']  # 最新一条说说的Tid,点赞所必需
+        try:
+            firstMoodContent = formatJson['msglist'][0]['content']  # 最新一条说说的内容
+            firstMoodTimeUnix = int(formatJson['msglist'][0]['created_time'])  # 最新一条说说的Unix时间戳(来自json)
+            firstMoodTid = formatJson['msglist'][0]['tid']  # 最新一条说说的Tid,点赞所必需
+        except Exception as e:
+            errprint(targetQQ, '未知返回值,将在', failure_delay, '秒后重试. 错误原因:', e, is_beep=True)
+            dbgprint(moodJson)
+            failure_delay += delay
+            sleep(failure_delay)
+            continue
         firstMoodTime = strftime("%Y-%m-%d %H:%M:%S", localtime(firstMoodTimeUnix))  # 最新说说的人类可阅读格式时间
         infoprint(targetQQ, '最新说说时间:', firstMoodTime, v=2)
         infoprint(targetQQ, 'tid:', firstMoodTid, v=2)
@@ -303,7 +310,11 @@ while True:
 
         if latestTid[targetQQ] != firstMoodTid:  # 最新一条说说的时间发生变化
             if firstMoodTimeUnix > latestTimeUnix[targetQQ]:  # 发了新的说说
-                handle_new_mood(Sess, firstMoodTime, firstMoodTid, firstMoodContent, targetQQ)  # 处理新说说事件
+                try:
+                    handle_new_mood(Sess, firstMoodTime, firstMoodTid, firstMoodContent, targetQQ)  # 处理新说说事件
+                except Exception as e:
+                    errprint('处理新说说时遇到意料外的错误,将在下轮中重试:', e)
+                    continue
                 latestTid[targetQQ] = firstMoodTid
                 latestTimeUnix[targetQQ] = firstMoodTimeUnix
             else:
