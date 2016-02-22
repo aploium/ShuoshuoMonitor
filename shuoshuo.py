@@ -15,7 +15,7 @@ try:
 except:
     errprint('requests,请安装: pip install requests')
 
-__version__ = '0.7.3'
+__version__ = '0.7.6'
 
 
 def is_complied():
@@ -45,7 +45,8 @@ def usage(error_code=0):
     print('    -s (selfQQ) --self-login: 指定自己的QQ并手动在浏览器中登陆')
     print('    -p (password) --password: (可选,长期运行必须)指定自己的QQ密码并自动登陆,在session过期后会自动重新登陆')
     print('    -q (targetQQ) --target-qq: 目标QQ号,使用多个-q来指定多个目标')
-    print('    -d (number)  --delay: 两次拉取说说的时间间隔(秒),默认15秒,当指定多于1个目标时会除以目标个数,除后最短3秒')
+    print('    -d (number)  --delay: 两次拉取说说的时间间隔(秒),默认15秒,当指定多于1个目标时会除以目标个数,除后最短2秒')
+    print('    -a (number)  --like-all: 给目标最近n条说说全部点赞(可以指定n=-1表示全部),耗时比较久')
     print('    -j (url) --jump-url: 用于自动登陆的跳转Url(仅供高级用户使用,大多数用户建议用-s)')
     print('    -v (0-3)  --verbose: verbose level(仅供高级用户) 默认1')
     print()
@@ -65,12 +66,13 @@ def usage(error_code=0):
 def parse_cmdline():
     import sys
     import getopt
-    global targetQQlist, ownerQQ, jumpUrl, verbose_level, password
+    global targetQQlist, ownerQQ, jumpUrl, verbose_level, password, like_all_limit
     assert isinstance(targetQQlist, list)
     required_args = {'-s', '-q'}
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hs:p:v:j:q:",
-                                   ['help', 'password=', 'verbose=', 'self-login=', 'target-qq=', 'jump-url='])
+        opts, args = getopt.getopt(sys.argv[1:], "hs:p:v:j:q:a:",
+                                   ['help', 'password=', 'verbose=', 'self-login=', 'target-qq=', 'jump-url=',
+                                    'like-all='])
     except getopt.GetoptError as err:
         # print help information and exit:
         errprint(err)  # will print something like "option -a not recognized"
@@ -100,6 +102,8 @@ def parse_cmdline():
             required_args.remove('-s')
         elif o in ("-p", "--password"):
             password = a
+        elif o in ("-a", "--like-all"):
+            like_all_limit = int(a)
         else:
             assert False, "unhandled option"
     if required_args:
@@ -124,6 +128,40 @@ def mood_do_like(Sess, tid, targetQQ):
         infoprint('点赞成功')
     else:
         errprint('点赞失败,返回值:', result.text)
+
+
+def like_your_every_shuoshuo(Sess, targetQQ, limit):
+    global token_list
+    i = 0
+    MAXIUM_SHUOSHUO_PER_AJAX = 40
+    while limit - i != 0:
+        try:
+            moodJson = Sess.get(
+                'http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?uin=%s&ftype=0&sort=0&pos=%d&num=%d&replynum=5&g_tk=%s&callback=_preloadCallback&code_version=1&format=jsonp&need_private_comment=1' % (
+                    targetQQ, i, MAXIUM_SHUOSHUO_PER_AJAX, token_list[targetQQ]))
+        except Exception as e:
+            errprint('加载失败,可能被ban,延时10秒后继续.错误信息:', e)
+            sleep(10)
+            continue
+        formatJson = json_loads(moodJson.text.replace('});', '}').replace('_preloadCallback(', ''))
+        if 'msglist' not in formatJson:  # 已经取完
+            infoprint('QQ', targetQQ, '的所有说说已经全部点赞完毕,总条数:', i)
+            return True
+        for item in formatJson['msglist']:
+            tid = item['tid']  # 说说的Tid,点赞所必需
+            mood_time_unix = int(item['created_time'])  # 说说的Unix时间戳(来自json)
+            mood_time_human = strftime("%Y-%m-%d %H:%M:%S", localtime(mood_time_unix))  # 说说的人类可阅读格式时间
+            infoprint('正在点赞QQ', targetQQ, '的第', i, '条说说,说说时间:', mood_time_human)
+            sleep(1)
+            try:
+                mood_do_like(Sess, tid, targetQQ)
+            except Exception as e:
+                errprint('加载失败,可能被ban,延时10秒后继续.错误信息:', e)
+                sleep(10)
+                break
+            sleep(1)
+            i += 1
+    infoprint('到达数量限制,点赞结束')
 
 
 def handle_new_mood(Sess, create_time, tid, content, targetQQ):
@@ -170,6 +208,7 @@ def login_with_password(driver, qq, password, retry_count=1):
             infoprint('登陆成功')
             break
     else:
+
         errprint('登陆失败,正在重试')
         driver = login_with_password(driver, qq, password, retry_count + 1)
     return driver
@@ -210,6 +249,7 @@ latestTid = {}
 token_list = {}
 token_like = {}
 latestTimeUnix = {}
+like_all_limit = 0
 ownerQQ = ''
 password = None
 verbose_level = 1
@@ -230,8 +270,10 @@ Sess.headers.update(
      })
 
 DEBUG_PROXY = {
-    "http": "http://127.0.0.1:8882",
-    "https": "http://127.0.0.1:8882",
+    "http": "http://127.0.0.1:1080",
+    "https": "http://127.0.0.1:1080",
+    "socks": "127.0.0.1:1080",
+    "socks5": "127.0.0.1:1080",
 } if False else {}
 Sess.proxies = DEBUG_PROXY
 dbgprint('proxy', Sess.proxies)
@@ -255,6 +297,10 @@ else:  # 未指定密码, 手动登陆
     infoprint('登陆成功')
 # ######### 自动获取每个目标的token ############
 get_each_targets_token()
+# ######### 如果指定了给某人所有说说点赞则先进行此步 ###########
+if like_all_limit:
+    for targetQQ in targetQQlist:
+        like_your_every_shuoshuo(Sess, targetQQ, like_all_limit)
 # ################ 循环监控新说说并点赞 #######################
 i = 0
 while True:
