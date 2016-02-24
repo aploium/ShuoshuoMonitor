@@ -338,6 +338,8 @@ while True:
             firstMoodContent = formatJson['msglist'][0]['content']  # 最新一条说说的内容
             firstMoodTimeUnix = int(formatJson['msglist'][0]['created_time'])  # 最新一条说说的Unix时间戳(来自json)
             firstMoodTid = formatJson['msglist'][0]['tid']  # 最新一条说说的Tid,点赞所必需
+            if not firstMoodContent or not firstMoodTimeUnix or not firstMoodTid:
+                raise FileNotFoundError('某一返回值为空')
         except Exception as e:
             errprint(targetQQ, '未知返回值,将在', failure_delay, '秒后重试. 错误原因:', e, is_beep=True)
             dbgprint(moodJson)
@@ -353,9 +355,8 @@ while True:
             latestTid[targetQQ] = firstMoodTid
             latestTimeUnix[targetQQ] = firstMoodTimeUnix
             initFlag[targetQQ] = False
-
         if latestTid[targetQQ] != firstMoodTid:  # 最新一条说说的时间发生变化
-            if firstMoodTimeUnix > latestTimeUnix[targetQQ]:  # 发了新的说说
+            if int(firstMoodTimeUnix) > int(latestTimeUnix[targetQQ]):  # 发了新的说说
                 try:
                     handle_new_mood(Sess, firstMoodTime, firstMoodTid, firstMoodContent, targetQQ)  # 处理新说说事件
                 except Exception as e:
@@ -365,7 +366,7 @@ while True:
                 latestTimeUnix[targetQQ] = firstMoodTimeUnix
             else:
                 latestTid[targetQQ] = firstMoodTid  # 删除了一条说说
-                latestTimeUnix[targetQQ] = firstMoodTime
+                latestTimeUnix[targetQQ] = firstMoodTimeUnix
                 importantprint(targetQQ, '对方删除了一条说说')
 
         sleep(delay)
