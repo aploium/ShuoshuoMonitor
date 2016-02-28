@@ -4,6 +4,7 @@ from re import search as re_search
 from time import sleep, strftime, localtime
 
 from _ColorfulPyPrint import *
+from _ColorfulPyPrint.extra_output_destination import WebqqClient
 from cookies_convert import selenium2requests
 
 try:
@@ -47,8 +48,12 @@ def usage(error_code=0):
     print('    -q (targetQQ) --target-qq: 目标QQ号,使用多个-q来指定多个目标')
     print('    -d (number)  --delay: 两次拉取说说的时间间隔(秒),默认15秒,当指定多于1个目标时会除以目标个数,除后最短2秒')
     print('    -a (number)  --like-all: 给目标最近n条说说全部点赞(可以指定n=-1表示全部),耗时比较久')
+    print('\n--------------------以下选项仅供进阶用户使用---------------------')
     print('    -j (url) --jump-url: 用于自动登陆的跳转Url(仅供高级用户使用,大多数用户建议用-s)')
-    print('    -v (0-3)  --verbose: verbose level(仅供高级用户) 默认1')
+    print('    -v (0-3)  --verbose: verbose level 默认1')
+    print('    --webqq-server: webqq提醒用服务器')
+    print('    --webqq-token: webqq提醒用token')
+    print('    --webqq-target: 接收webqq提醒的目标')
     print()
     print('example1: ' + program_exec_cmd + ' -q  -> object345678901 -q 123456789 -q 223456789 -s 333333333')
     print('  在例1中,会打开firefox让你手动登陆,自身qq号为333333333,\n'
@@ -67,12 +72,13 @@ def parse_cmdline():
     import sys
     import getopt
     global targetQQlist, ownerQQ, jumpUrl, verbose_level, password, like_all_limit
+    global webqq_server, webqq_target, webqq_token
     assert isinstance(targetQQlist, list)
     required_args = {'-s', '-q'}
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hs:p:v:j:q:a:",
                                    ['help', 'password=', 'verbose=', 'self-login=', 'target-qq=', 'jump-url=',
-                                    'like-all='])
+                                    'like-all=', 'webqq-server=', 'webqq-token=', 'webqq-target='])
     except getopt.GetoptError as err:
         # print help information and exit:
         errprint(err)  # will print something like "option -a not recognized"
@@ -104,6 +110,12 @@ def parse_cmdline():
             password = a
         elif o in ("-a", "--like-all"):
             like_all_limit = int(a)
+        elif o == 'webqq-server':
+            webqq_server = a
+        elif o == 'webqq-token':
+            webqq_token = a
+        elif o == 'webqq-target':
+            webqq_target = a
         else:
             assert False, "unhandled option"
     if required_args:
@@ -250,6 +262,9 @@ token_list = {}
 token_like = {}
 latestTimeUnix = {}
 like_all_limit = 0
+webqq_server = ''
+webqq_target = ''
+webqq_token = ''
 ownerQQ = ''
 password = None
 verbose_level = 1
@@ -262,6 +277,10 @@ delay = delay / len(targetQQlist) if delay / len(targetQQlist) > 2 else 2
 failure_delay = delay  # increase once we failure
 dbgprint('delay', delay, v=2)
 initFlag = {qq: True for qq in targetQQlist}
+if webqq_target and webqq_token and webqq_server:
+    q_client = WebqqClient(webqq_server, token=webqq_token, target=webqq_target)
+    q_client.send_to_discuss('shuoshuoMonitor webqq初始化')
+    add_extra_output_destination(q_client)
 
 # ######初始化Requests######
 Sess = session()
