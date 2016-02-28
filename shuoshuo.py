@@ -110,11 +110,11 @@ def parse_cmdline():
             password = a
         elif o in ("-a", "--like-all"):
             like_all_limit = int(a)
-        elif o == 'webqq-server':
+        elif o == '--webqq-server':
             webqq_server = a
-        elif o == 'webqq-token':
+        elif o == '--webqq-token':
             webqq_token = a
-        elif o == 'webqq-target':
+        elif o == '--webqq-target':
             webqq_target = a
         else:
             assert False, "unhandled option"
