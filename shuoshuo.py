@@ -4,7 +4,7 @@ from re import search as re_search
 from time import sleep, strftime, localtime
 
 from _ColorfulPyPrint import *
-from _ColorfulPyPrint.extra_output_destination import WebqqClient
+from _ColorfulPyPrint.extra_output_destination.webqq_client import WebqqClient
 from cookies_convert import selenium2requests
 
 try:
@@ -16,7 +16,7 @@ try:
 except:
     errprint('requests,请安装: pip install requests')
 
-__version__ = '0.7.6'
+__version__ = '0.7.7'
 
 
 def is_complied():
@@ -277,10 +277,11 @@ delay = delay / len(targetQQlist) if delay / len(targetQQlist) > 2 else 2
 failure_delay = delay  # increase once we failure
 dbgprint('delay', delay, v=2)
 initFlag = {qq: True for qq in targetQQlist}
+# ######初始化webqq通知模块
 if webqq_target and webqq_token and webqq_server:
     q_client = WebqqClient(webqq_server, token=webqq_token, target=webqq_target)
     q_client.send_to_discuss('shuoshuoMonitor webqq初始化')
-    add_extra_output_destination(q_client)
+    add_extra_output_destination(q_client, important_level=2)
 
 # ######初始化Requests######
 Sess = session()
@@ -331,7 +332,8 @@ while True:
                 'http://taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6?uin=%s&ftype=0&sort=0&pos=0&num=5&replynum=100&g_tk=%s&callback=_preloadCallback&code_version=1&format=jsonp&need_private_comment=1' % (
                     targetQQ, token_list[targetQQ]))
         except Exception as e:
-            errprint(targetQQ, '说说信息获取失败,将在', failure_delay, '秒后重试. 错误原因:', e)
+            errprint(targetQQ, '说说信息获取失败,将在', failure_delay, '秒后重试. 错误原因:', e
+                     , i=1 if failure_delay < delay * 3 else 3)  # 多次失败,发送一个重要等级较高的通知
             failure_delay += delay
             sleep(failure_delay)
             continue
@@ -339,7 +341,8 @@ while True:
         try:
             formatJson = json_loads(moodJson.text.replace('});', '}').replace('_preloadCallback(', ''))
         except Exception as e:
-            errprint(targetQQ, '无法解析说说内容,将在', failure_delay, '秒后重试. 错误原因:', e, is_beep=True)
+            errprint(targetQQ, '无法解析说说内容,将在', failure_delay, '秒后重试. 错误原因:', e, is_beep=True
+                     , i=1 if failure_delay < delay * 3 else 3)  # 多次失败,发送一个重要等级较高的通知
             failure_delay += delay
             sleep(failure_delay)
             continue
@@ -349,7 +352,8 @@ while True:
                 driver = login_with_password(driver, ownerQQ, password)
                 get_each_targets_token()
         if formatJson['code'] != json_code_meaning['Normal']:  # 返回值不正常,重试
-            errprint('返回值不正常:', formatJson['code'], '信息:', formatJson['message'])
+            errprint('返回值不正常:', formatJson['code'], '信息:', formatJson['message']
+                     , i=1 if failure_delay < delay * 3 else 3)  # 多次尝试失败后提高错误等级
             failure_delay += delay
             sleep(failure_delay)
             continue
