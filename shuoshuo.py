@@ -16,7 +16,7 @@ try:
 except:
     errprint('requests,请安装: pip install requests')
 
-__version__ = '0.7.7'
+__version__ = '0.7.8'
 
 
 def is_complied():
@@ -177,7 +177,6 @@ def like_your_every_shuoshuo(Sess, targetQQ, limit):
 
 
 def handle_new_mood(Sess, create_time, tid, content, targetQQ):
-    # TODO: 添加邮件提醒
     importantprint(targetQQ, '发现新的说说 时间:', create_time, '\r\ntid:', tid, '\r\n', content)
     mood_do_like(Sess, tid, targetQQ)
 
@@ -248,6 +247,70 @@ def get_each_targets_token():
     driver.quit()
 
     dbgprint(Sess.cookies)
+
+
+def get_liked_people_for_a_shuoshuo(Sess, tid, target_qq):
+    """
+    获取给某条说说点赞的人,只能获取前60条
+    函数返回值:
+    {
+        "total_number" : 29, # 这是本条说说总的点赞人数
+        "is_dolike" : 0,
+        "like_uin_info" : [{
+                "fuin" : 点赞者1的QQ号(数字),
+                "nick" : "你给点赞者1的备注",
+                "portrait" : "http://qlogo3.store.qq.com/qzone/点赞者1的QQ号/点赞者1的QQ号/30",
+                "gender" : "",
+                "constellation" : "",
+                "addr" : " ",
+                "if_qq_friend" : 1,
+                "if_special_care" : 0
+            }, {
+                "fuin" : 点赞者2的QQ号(数字),
+                "nick" : "你给点赞者2的备注",
+                "portrait" : "http://qlogo3.store.qq.com/qzone/点赞者2的QQ号/点赞者2的QQ号/30",
+                "gender" : "女",
+                "constellation" : "射手座",
+                "addr" : "台州",
+                "if_qq_friend" : 1,
+                "if_special_care" : 0
+            }, {
+                "fuin" : 点赞者3的QQ号(数字),
+                "nick" : "你给点赞者2的备注",
+                "portrait" : "http://qlogo3.store.qq.com/qzone/点赞者3的QQ号/点赞者3的QQ号/30",
+                "gender" : "男",
+                "constellation" : "摩羯座",
+                "addr" : "白银",
+                "if_qq_friend" : 1,
+                "if_special_care" : 0
+            }] # 省略更多的点赞者
+    }
+    """
+    global token_like
+    infoprint('正在获取为QQ', target_qq, '的说说', tid, '点赞的人')
+    result = Sess.get(
+        'http://users.qzone.qq.com/cgi-bin/likes/get_like_list_app',
+        params={
+            'uin': ownerQQ
+            , 'unikey': 'http://user.qzone.qq.com/%s/mood/%s.1' % (target_qq, tid)
+            , 'begin_uin': 0
+            , 'query_count': 60
+            , 'if_first_page': 1
+            , 'g_tk': token_like[target_qq]
+        },
+        headers={'referer': 'http://user.qzone.qq.com/%s/mood' % target_qq}
+    )
+    result.encoding = 'utf-8'  # 需要手动指定为utf-8 不然会识别错误
+    result = result.text
+    try:
+        result_json = json_loads(result.replace('_Callback(', '').replace(');', ''))
+    except Exception as e:
+        errprint('在无法解析返回的json,错误原因:', e)
+    else:
+        if 'data' in result_json:
+            return result_json['data']
+        else:
+            return None
 
 
 # 初始化各种变量和参数
