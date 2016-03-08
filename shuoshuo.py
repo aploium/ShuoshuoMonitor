@@ -406,7 +406,7 @@ if alidayu_appkey:
     )
     sms.set_default_sms_param(alidayu_params, alidayu_sms_key)
     sms.send_sms('shuoshuoMonitor webqq初始化')
-    add_extra_output_destination(sms, important_level=2)
+    add_extra_output_destination(sms, important_level=3)
 
 # ######初始化Requests######
 Sess = session()
@@ -473,9 +473,14 @@ while True:
             continue
         if formatJson['code'] == json_code_meaning['请先登陆空间']:  # 登陆失效
             if password is not None:  # 如果指定了密码则重新登陆
+                importantprint('登陆失效,将自动重新登陆')
                 driver = selenium_driver_init()
                 driver = login_with_password(driver, ownerQQ, password)
                 get_each_targets_token()
+            else:  # 未指定密码,需要手动重新登陆
+                importantprint('登陆失效,程序退出.请重新运行(若希望自动重新登陆,请在运行时指定QQ账号密码)')
+                sleep(15)
+                exit()
         if formatJson['code'] != json_code_meaning['Normal']:  # 返回值不正常,重试
             errprint('返回值不正常:', formatJson['code'], '信息:', formatJson['message']
                      , i=1 if failure_delay < delay * 3 else 3)  # 多次尝试失败后提高错误等级
