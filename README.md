@@ -1,9 +1,10 @@
 # ShuoshuoMonitor  
 ---
-`version 0.7.0`  
+`version 0.7.9`  
 监控别人的说说,并在对方新发说说时给予秒赞  
 支持多个目标  
 在运行时会先打开firefox(需要手动登陆QQ空间)，然后在自动获取cookies后关掉firefox,此后均不需要浏览器  
+支持在对方有新说说时通过QQ消息/手机短信实时通知自己  
 tips:建议丢到windows server上运行
   
 ## 下载与运行  
@@ -52,8 +53,10 @@ tips:建议丢到windows server上运行
  - selenium (一个python模块,已内置)  
 
 ## 已知问题  
- - session会在大约24小时后失效，此后需要重新登录  
-
-## TODO  
- - 在对方有新说说时用邮件通知自己  
- - 给定自己QQ的账号密码,在session失效后自动重新登录  
+ - session会在大约5天后失效，此后需要重新登录  
+ 
+## QQ消息通知与短信通知
+这两个功能是由内置的[ColorfulPyPrint模块](https://github.com/Aploium/ColorfulPyPrint)提供的  
+  
+QQ消息通知需要自己的WebQQ消息服务端,服务端的运行(相当傻瓜化)见[WebQQ_API](https://github.com/Aploium/WebQQ_API)  
+短信通知使用了[阿里大鱼](http://www.alidayu.com/)的短信接口  

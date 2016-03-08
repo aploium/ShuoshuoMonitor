@@ -1,6 +1,9 @@
 # -*- coding: UTF-8 -*-
 """
 Enjoy printing
+github: https://github.com/Aploium/ColorfulPyPrint
+Author: aploium@aploium.com
+License: GPLv3
 """
 from __future__ import print_function
 

@@ -4,6 +4,7 @@ from re import search as re_search
 from time import sleep, strftime, localtime
 
 from _ColorfulPyPrint import *
+from _ColorfulPyPrint.extra_output_destination.aliyun_sms import AlidayuSMS
 from _ColorfulPyPrint.extra_output_destination.webqq_client import WebqqClient
 from cookies_convert import selenium2requests
 
@@ -16,7 +17,7 @@ try:
 except:
     errprint('requests,请安装: pip install requests')
 
-__version__ = '0.7.8'
+__version__ = '0.7.9'
 
 
 def is_complied():
@@ -51,9 +52,23 @@ def usage(error_code=0):
     print('\n--------------------以下选项仅供进阶用户使用---------------------')
     print('    -j (url) --jump-url: 用于自动登陆的跳转Url(仅供高级用户使用,大多数用户建议用-s)')
     print('    -v (0-3)  --verbose: verbose level 默认1')
+    print()
+    print('-----若你有一个WebQQ消息服务器,程序支持实时发送通知到你的QQ号------')
+    print('可以戳这里 https://github.com/Aploium/WebQQ_API 来运行自己的服务器(很傻瓜化)')
     print('    --webqq-server: webqq提醒用服务器')
     print('    --webqq-token: webqq提醒用token')
-    print('    --webqq-target: 接收webqq提醒的目标')
+    print('    --webqq-target: 接收webqq提醒的目标,暂时只支持讨论组(请新建一个与小号的二人讨论组)')
+    print()
+    print('-----若你有一个阿里大鱼短信接口账号,程序支持实时发送短信通知到你的手机上------')
+    print('可以访问阿里大鱼官网来开通短信账号(不需要企业认证) http://www.alidayu.com ')
+    print('    --alidayu-appkey: 阿里大鱼短信服务的appkey')
+    print('    --alidayu-secret: 阿里大鱼短信服务的secret')
+    print('    --alidayu-cellphone: 用于接收短信的手机号')
+    print('    --alidayu-sign: 阿里大鱼短信服务的短信签名')
+    print('    --alidayu-template: 阿里大鱼短信服务的短信模板号,如SMS_5376067')
+    print('    --alidayu-params-file: 保存填充短信模板的键值对的文件,以json格式存储,因为直接在命令行中输入有太多转义,所以存到文件中,utf-8')
+    print('    --alidayu-sms-key: 在上述键值对中哪一个键作为消息主体')
+    print('    --alidayu-partner-id: 阿里大鱼短信服务的partner_id(可选)')
     print()
     print('example1: ' + program_exec_cmd + ' -q  -> object345678901 -q 123456789 -q 223456789 -s 333333333')
     print('  在例1中,会打开firefox让你手动登陆,自身qq号为333333333,\n'
@@ -73,12 +88,17 @@ def parse_cmdline():
     import getopt
     global targetQQlist, ownerQQ, jumpUrl, verbose_level, password, like_all_limit
     global webqq_server, webqq_target, webqq_token
+    global alidayu_appkey, alidayu_secret, alidayu_cellphone, alidayu_sign
+    global alidayu_template, alidayu_params, alidayu_sms_key, alidayu_partner_id
     assert isinstance(targetQQlist, list)
     required_args = {'-s', '-q'}
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hs:p:v:j:q:a:",
                                    ['help', 'password=', 'verbose=', 'self-login=', 'target-qq=', 'jump-url=',
-                                    'like-all=', 'webqq-server=', 'webqq-token=', 'webqq-target='])
+                                    'like-all=', 'webqq-server=', 'webqq-token=', 'webqq-target=',
+                                    'alidayu-appkey=', 'alidayu-secret=', 'alidayu-cellphone=', 'alidayu-sign=',
+                                    'alidayu-template=', 'alidayu-params-file=', 'alidayu-sms-key=',
+                                    'alidayu-partner-id='])
     except getopt.GetoptError as err:
         # print help information and exit:
         errprint(err)  # will print something like "option -a not recognized"
@@ -116,6 +136,24 @@ def parse_cmdline():
             webqq_token = a
         elif o == '--webqq-target':
             webqq_target = a
+        elif o == '--alidayu-appkey':
+            alidayu_appkey = a
+        elif o == '--alidayu-secret':
+            alidayu_secret = a
+        elif o == '--alidayu-cellphone':
+            alidayu_cellphone = a
+        elif o == '--alidayu-sign':
+            alidayu_sign = a
+        elif o == '--alidayu-template':
+            alidayu_template = a
+        elif o == '--alidayu-params-file':
+            with open(a, 'r', encoding='utf-8') as fp:
+                buff = fp.read()
+            alidayu_params = json_loads(buff)
+        elif o == '--alidayu-sms-key':
+            alidayu_sms_key = a
+        elif o == '--alidayu-partner-id':
+            alidayu_partner_id = a
         else:
             assert False, "unhandled option"
     if required_args:
@@ -331,6 +369,16 @@ webqq_token = ''
 ownerQQ = ''
 password = None
 verbose_level = 1
+
+alidayu_appkey = None
+alidayu_secret = None
+alidayu_cellphone = None
+alidayu_sign = None
+alidayu_template = None
+alidayu_params = None
+alidayu_sms_key = None
+alidayu_partner_id = None
+
 infoprint('处理参数')
 parse_cmdline()  # here we parse command line
 apoutput_set_verbose_level(verbose_level)
@@ -345,6 +393,20 @@ if webqq_target and webqq_token and webqq_server:
     q_client = WebqqClient(webqq_server, token=webqq_token, target=webqq_target)
     q_client.send_to_discuss('shuoshuoMonitor webqq初始化')
     add_extra_output_destination(q_client, important_level=2)
+
+# ######初始化阿里大鱼通知模块
+if alidayu_appkey:
+    dbgprint(alidayu_params)
+    sms = AlidayuSMS(
+        alidayu_appkey, alidayu_secret,
+        default_rec_num=alidayu_cellphone,
+        default_sms_free_sign_name=alidayu_sign,
+        default_sms_template_code=alidayu_template,
+        default_partner_id=alidayu_partner_id
+    )
+    sms.set_default_sms_param(alidayu_params, alidayu_sms_key)
+    sms.send_sms('shuoshuoMonitor webqq初始化')
+    add_extra_output_destination(sms, important_level=2)
 
 # ######初始化Requests######
 Sess = session()
